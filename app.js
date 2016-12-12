@@ -24,8 +24,8 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 5,
-      running: true,
+      remaining: 25 * 60,
+      running: false,
     };
   },
   componentDidMount: function(){
@@ -40,10 +40,12 @@ const Countdown = React.createClass({
       clearInterval(this.tickInterval, 1000);
       this.tickInterval = setInterval(this.tick, 1000);
     };
+    document.title=helpers.secondsToHuman(this.state.remaining);
   },
   tick: function(){
     if (this.state.remaining === 0) {
-      this.setState({ remaining: 5, running: false });
+      alert("Finished");
+      this.setState({ remaining: 25 * 60, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
