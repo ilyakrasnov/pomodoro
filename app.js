@@ -43,7 +43,7 @@ const Countdown = React.createClass({
   },
   tick: function(){
     if (this.state.remaining === 0) {
-      this.setState({ remaining: 5 });
+      this.setState({ remaining: 5, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
@@ -74,7 +74,7 @@ const ButtonControls = React.createClass({
     if (this.props.running){
       return (
         <button
-          className="ui compact icon button"
+          className="ui huge negative button"
           onClick={this.props.handlePauseClick}
         >
           <i className="pause icon"></i>
@@ -83,7 +83,7 @@ const ButtonControls = React.createClass({
     } else {
       return (
         <button
-          className="ui compact icon button"
+          className="ui huge positive button"
           onClick={this.props.handlePauseClick}
         >
           <i className="play icon"></i>
@@ -110,29 +110,6 @@ const Accomplishment = React.createClass({
   },
 });
 
-const TimerActionButton = React.createClass({
-  render: function(){
-    if (this.props.timerIsRunning) {
-      return (
-        <div
-          className='ui bottom attached red basic button'
-          onClick={this.props.onStopClick}
-        >
-        Stop
-        </div>
-        );
-    } else {
-      return (
-        <div
-          className='ui bottom attached green basic button'
-          onClick={this.props.onStartClickk}
-        >
-        Start
-        </div>
-      );
-    }
-  },
-});
 
 ReactDOM.render(
   <Pomodoro />,
