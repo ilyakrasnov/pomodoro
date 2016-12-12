@@ -1,13 +1,25 @@
 const Pomodoro = React.createClass({
+  fetchCompleted: function(){
+    let today = helpers.todaysDate();
+    let completed = JSON.parse(localStorage.getItem('completedPomodoros'[today])) || 0;
+    if (completed === 0) { localStorage.setItem('completedPomodoros'[today], 0)};
+    return completed;
+  },
+  updateStorage: function(){
+    localStorage.setItem('completedPomodoros', this.state.completed)
+  },
   getInitialState: function(){
     return (
       {
-        completed: 0,
+        completed: this.fetchCompleted(),
       }
     )
   },
   handleUpdate: function(){
-    this.setState( { completed: this.state.completed + 1});
+    let new_count = this.state.completed + 1;
+
+    this.setState( { completed: new_count});
+    this.updateStorage();
   },
   render: function(){
     return (
@@ -24,7 +36,7 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 25 * 60,
+      remaining: 5,
       running: false,
     };
   },
@@ -45,7 +57,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       alert("Finished");
-      this.setState({ remaining: 25 * 60, running: false });
+      this.setState({ remaining: 5, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
@@ -94,7 +106,6 @@ const ButtonControls = React.createClass({
     }
   },
 });
-
 const Accomplishment = React.createClass({
   render: function(){
     return (
