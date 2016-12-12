@@ -61,6 +61,7 @@ const Countdown = React.createClass({
           <h1>{helpers.secondsToHuman(s)}</h1>
           <ButtonControls
             handlePauseClick={this.handlePauseClick}
+            running={this.state.running}
           />
         </div>
       </div>
@@ -70,14 +71,25 @@ const Countdown = React.createClass({
 
 const ButtonControls = React.createClass({
   render: function(){
-    return (
-      <button
-        className="ui compact icon button"
-        onClick={this.props.handlePauseClick}
-      >
-        <i className="pause icon"></i>
-      </button>
-    )
+    if (this.props.running){
+      return (
+        <button
+          className="ui compact icon button"
+          onClick={this.props.handlePauseClick}
+        >
+          <i className="pause icon"></i>
+        </button>
+      )
+    } else {
+      return (
+        <button
+          className="ui compact icon button"
+          onClick={this.props.handlePauseClick}
+        >
+          <i className="play icon"></i>
+        </button>
+      )
+    }
   },
 });
 
@@ -90,7 +102,7 @@ const Accomplishment = React.createClass({
           {this.props.completed}
         </div>
         <div className="label">
-          Pomodoros
+          Pomodoros today
         </div>
       </div>
     </div>
