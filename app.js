@@ -59,7 +59,7 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 2,
+      remaining: 25 * 60,
       running: false,
     };
   },
@@ -80,7 +80,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       this.props.ringTheBell();
-      this.setState({ remaining: 2, running: false });
+      this.setState({ remaining: 25 * 60, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
