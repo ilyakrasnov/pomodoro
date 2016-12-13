@@ -1,8 +1,7 @@
 const Pomodoro = React.createClass({
   fetchCompleted: function(){
-    let today = helpers.todaysDate();
-    let completed = JSON.parse(localStorage.getItem('completedPomodoros'[today])) || 0;
-    if (completed === 0) { localStorage.setItem('completedPomodoros'[today], 0)};
+    let completed = JSON.parse(localStorage.getItem('completedPomodoros')) || 0;
+    if (completed === 0) { localStorage.setItem('completedPomodoros', 0)};
     return completed;
   },
   updateStorage: function(){
