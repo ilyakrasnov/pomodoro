@@ -31,11 +31,26 @@ window.helpers = (function () {
           mm='0'+mm
     }
 
-    return dd+'/'+mm+'/'+yyyy;
+    return dd+''+mm+''+yyyy;
+  }
+
+  function setFireBase(id, date, object) {
+    firebase.database().ref('pomodoros/'+id+'/'+date).set(object);
+  }
+
+   function fetchOrNewUuid(){
+    let id = localStorage.getItem('pomodoroId');
+    if (!id) {
+      id = uuid.v1();
+      localStorage.setItem('pomodoroId', id);
+    }
+    return id;
   }
 
   return {
     secondsToHuman,
-    todaysDate
+    todaysDate,
+    setFireBase,
+    fetchOrNewUuid
   };
 }());

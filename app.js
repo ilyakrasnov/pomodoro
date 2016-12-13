@@ -1,23 +1,42 @@
+const config = {
+      apiKey: "AIzaSyDdK5JW9ZrwiHnzqUi0iczVD1-4g9SNhMs",
+      authDomain: "pomodoro-cfd39.firebaseapp.com",
+      databaseURL: "https://pomodoro-cfd39.firebaseio.com",
+      storageBucket: "pomodoro-cfd39.appspot.com",
+      messagingSenderId: "754390314400"
+    };
+firebase.initializeApp(config);
+
 const Pomodoro = React.createClass({
-  fetchCompleted: function(){
-    let completed = JSON.parse(localStorage.getItem('completedPomodoros')) || 0;
-    if (completed === 0) { localStorage.setItem('completedPomodoros', 0)};
-    return completed;
-  },
-  updateStorage: function(){
-    localStorage.setItem('completedPomodoros', this.state.completed)
-  },
   getInitialState: function(){
     return (
       {
-        completed: this.fetchCompleted(),
+        completedToday: 0,
+        appId: helpers.fetchOrNewUuid(),
       }
     )
   },
+  componentDidMount: function(){
+    this.fetchOrSetFirebase();
+  },
+  updateStorage: function(){
+    helpers.setFireBase(this.state.appId, helpers.todaysDate(), {
+      completed: this.state.completedToday,
+    });
+  },
+  fetchOrSetFirebase: function(){
+    let comp;
+    firebase.database().ref('pomodoros/'+this.state.appId+'/'+helpers.todaysDate()).on('value', snapshot => {
+      if (snapshot.val() != null) {
+        comp = snapshot.val().completed;
+      } else {
+        comp = 0;
+      };
+      this.setState({completedToday: comp});
+    });
+  },
   handleUpdate: function(){
-    let new_count = this.state.completed + 1;
-
-    this.setState( { completed: new_count});
+    this.setState( { completedToday: this.state.completedToday + 1 });
     this.updateStorage();
   },
   render: function(){
@@ -25,9 +44,9 @@ const Pomodoro = React.createClass({
       <div className='pomodoro'>
         <Countdown
           updateStats={this.handleUpdate}
-          currentPomodoro={this.state.completed + 1}
+          currentPomodoro={this.state.completedToday + 1}
         />
-        <Stats completed={this.state.completed}/>
+        <Stats completedToday={this.state.completedToday}/>
       </div>
     )
   },
@@ -36,7 +55,7 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 5,
+      remaining: 2,
       running: false,
     };
   },
@@ -57,7 +76,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       alert("Finished");
-      this.setState({ remaining: 5, running: false });
+      this.setState({ remaining: 2, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
@@ -120,7 +139,7 @@ const Stats = React.createClass({
 
             <div className="ui horizontal statistic">
               <div className="value">
-                {this.props.completed}
+                {this.props.completedToday}
               </div>
               <div className="label">
                 pomodoros today
@@ -134,7 +153,6 @@ const Stats = React.createClass({
     )
   },
 });
-
 
 ReactDOM.render(
   <Pomodoro />,
