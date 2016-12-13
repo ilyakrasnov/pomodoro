@@ -26,8 +26,9 @@ const Pomodoro = React.createClass({
       <div className='pomodoro'>
         <Countdown
           updateStats={this.handleUpdate}
+          currentPomodoro={this.state.completed + 1}
         />
-        <Accomplishment completed={this.state.completed}/>
+        <Stats completed={this.state.completed}/>
       </div>
     )
   },
@@ -70,14 +71,18 @@ const Countdown = React.createClass({
   render: function(){
     const s = this.state.remaining;
     return (
-      <div className='ui centered card'>
-        <div className='content centered'>
-          <h1>{helpers.secondsToHuman(s)}</h1>
-          <ButtonControls
-            handlePauseClick={this.handlePauseClick}
-            running={this.state.running}
-          />
+      <div className="ui  centered card">
+        <div className="content">
+          <div className="header">Pomodoro #{this.props.currentPomodoro}</div>
+          <div className="description">
+            <h1>{helpers.secondsToHuman(s)}</h1>
+          </div>
         </div>
+        <ButtonControls
+          handlePauseClick={this.handlePauseClick}
+          running={this.state.running}
+        />
+
       </div>
     )
   },
@@ -87,38 +92,46 @@ const ButtonControls = React.createClass({
   render: function(){
     if (this.props.running){
       return (
-        <button
-          className="ui huge negative button"
+        <div
+          className="ui bottom attached negative button"
           onClick={this.props.handlePauseClick}
         >
           <i className="pause icon"></i>
-        </button>
+        </div>
       )
     } else {
       return (
-        <button
-          className="ui huge positive button"
+        <div
+          className="ui bottom attached positive button"
           onClick={this.props.handlePauseClick}
         >
           <i className="play icon"></i>
-        </button>
+        </div>
       )
     }
   },
 });
-const Accomplishment = React.createClass({
+
+const Stats = React.createClass({
   render: function(){
     return (
-    <div className="ui centered statistics">
-      <div className="statistic">
-        <div className="value">
-          {this.props.completed}
-        </div>
-        <div className="label">
-          Pomodoros today
+      <div className="ui  centered card">
+        <div className="content">
+          <div className="description">
+
+            <div className="ui horizontal statistic">
+              <div className="value">
+                {this.props.completed}
+              </div>
+              <div className="label">
+                pomodoros today
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
+
     )
   },
 });
