@@ -39,12 +39,16 @@ const Pomodoro = React.createClass({
     this.setState( { completedToday: this.state.completedToday + 1 });
     this.updateStorage();
   },
+  ringTheBell: function() {
+    document.getElementById("audio").play();
+  },
   render: function(){
     return (
       <div className='pomodoro'>
         <Countdown
           updateStats={this.handleUpdate}
           currentPomodoro={this.state.completedToday + 1}
+          ringTheBell={this.ringTheBell}
         />
         <Stats completedToday={this.state.completedToday}/>
       </div>
@@ -75,7 +79,7 @@ const Countdown = React.createClass({
   },
   tick: function(){
     if (this.state.remaining === 0) {
-      alert("Finished");
+      this.props.ringTheBell();
       this.setState({ remaining: 2, running: false });
       this.props.updateStats();
     } else {
