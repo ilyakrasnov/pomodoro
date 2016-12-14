@@ -146,6 +146,7 @@ const ButtonControls = React.createClass({
   },
 });
 
+
 const Stats = React.createClass({
   render: function(){
     return (
@@ -180,6 +181,7 @@ const Todos = React.createClass({
         todos = [];
       };
       this.setState({todos: todos});
+      this.updateFirebase();
     });
   },
   getInitialState: function (){
@@ -191,19 +193,21 @@ const Todos = React.createClass({
   componentDidMount: function() {
     this.fetchOrSetFirebase();
   },
+  componentDidUpdate: function(){
+    this.updateFirebase();
+  },
   updateFirebase: function() {
     firebase.database().ref('pomodoros/'+this.props.appId+'/todos').set(this.state.todos)
   },
   handleNewTodoSubmit: function(newTodo){
     this.setState( { todos: [...this.state.todos, newTodo]})
-    this.updateFirebase();
   },
   render: function(){
     return (
-        <div>
-          <NewTodo handleNewTodoSubmit={this.handleNewTodoSubmit}/>
-          <TodoList todos={this.state.todos}/>
-        </div>
+      <div>
+        <NewTodo handleNewTodoSubmit={this.handleNewTodoSubmit}/>
+        <TodoList todos={this.state.todos}/>
+      </div>
     )
   },
 });
@@ -211,16 +215,23 @@ const Todos = React.createClass({
 const NewTodo = React.createClass({
   getInitialState: function(){
     return (
-        { newTodo: { text: "", completed: false }  }
+      { newTodo: { text: "", completed: false, id: uuid.v1() }  }
     )
   },
   handleChange: function(evt){
-    this.setState({ newTodo: {text: evt.target.value, completed: false } });
+    this.setState({ newTodo: {text: evt.target.value, completed: false, id: this.state.newTodo.id } });
   },
   handleNewTodoSubmit: function(evt){
     evt.preventDefault();
-    this.props.handleNewTodoSubmit(this.state.newTodo);
-    this.refs.newTodo.value = '';
+    if (this.state.newTodo.text === '') {
+      return
+    } else {
+      let id = uuid.v1();
+      this.setState({ newTodo: {text: this.state.newTodo.text, completed: this.state.newTodo.completed, id: this.state.newTodo.id } });
+      this.props.handleNewTodoSubmit(this.state.newTodo);
+      this.refs.newTodo.value = '';
+      this.setState({ newTodo: {text: '', completed: false, id: uuid.v1() } });
+    };
   },
   render: function(){
     return (
@@ -230,7 +241,7 @@ const NewTodo = React.createClass({
           onSubmit={this.handleNewTodoSubmit}
         >
           <div className="fields">
-            <div className="twelve wide field">
+            <div className="sixteen wide field">
               <input
                 type="text"
                 ref="newTodo"
@@ -238,8 +249,8 @@ const NewTodo = React.createClass({
                 onChange={this.handleChange}
               />
             </div>
-            <div className="one wide field">
-              <button className="ui button" type="submit">Add</button>
+            <div className="field">
+              <button style={{display: 'none'}} className="ui button" type="submit">Add</button>
             </div>
           </div>
         </form>
@@ -255,7 +266,7 @@ const TodoList = React.createClass({
         <Todo
           text={todo.text}
           completed={todo.completed}
-          key={todo.text}
+          key={todo.id}
         />
       );
     });
