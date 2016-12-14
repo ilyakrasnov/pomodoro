@@ -44,14 +44,27 @@ const Pomodoro = React.createClass({
   },
   render: function(){
     return (
-      <div className='pomodoro'>
-        <Countdown
-          updateStats={this.handleUpdate}
-          currentPomodoro={this.state.completedToday + 1}
-          ringTheBell={this.ringTheBell}
-        />
-        <Stats completedToday={this.state.completedToday}/>
+
+      <div className="ui grid">
+        <div className="three column row">
+          <div className="column">
+
+            <div className='pomodoro'>
+              <Countdown
+                updateStats={this.handleUpdate}
+                currentPomodoro={this.state.completedToday + 1}
+                ringTheBell={this.ringTheBell}
+              />
+              <Stats completedToday={this.state.completedToday}/>
+            </div>
+
+          </div>
+          <div className="ten wide column">
+            <Todos />
+          </div>
+        </div>
       </div>
+
     )
   },
 });
@@ -59,7 +72,7 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 25 * 60,
+      remaining: 2,
       running: false,
     };
   },
@@ -80,7 +93,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       this.props.ringTheBell();
-      this.setState({ remaining: 25 * 60, running: false });
+      this.setState({ remaining: 2, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
@@ -93,7 +106,7 @@ const Countdown = React.createClass({
   render: function(){
     const s = this.state.remaining;
     return (
-      <div className="ui  centered card">
+      <div className="ui  card">
         <div className="content">
           <div className="header">Pomodoro #{this.props.currentPomodoro}</div>
           <div className="description">
@@ -104,7 +117,6 @@ const Countdown = React.createClass({
           handlePauseClick={this.handlePauseClick}
           running={this.state.running}
         />
-
       </div>
     )
   },
@@ -137,7 +149,7 @@ const ButtonControls = React.createClass({
 const Stats = React.createClass({
   render: function(){
     return (
-      <div className="ui  centered card">
+      <div className="ui  card">
         <div className="content">
           <div className="description">
 
@@ -158,7 +170,127 @@ const Stats = React.createClass({
   },
 });
 
+const Todos = React.createClass({
+  getInitialState: function (){
+    return (
+        {
+      todos: [
+        {
+          text: "Learn React",
+          completed: false
+        },
+        {
+          text: "Learn Angular",
+          completed: false
+        },
+        {
+          text: "Work on OAMP",
+          completed: false
+        },
+        {
+          text: "Email Yaakov",
+          completed: false
+        },
+        {
+          text: "Listen to Kafka",
+          completed: false
+        },
+      ]
+    })
+  },
+  handleNewTodoSubmit: function(newTodo){
+    this.setState( { todos: [...this.state.todos, newTodo]})
+  },
+  render: function(){
+    return (
+        <div>
+          <NewTodo handleNewTodoSubmit={this.handleNewTodoSubmit}/>
+          <TodoList todos={this.state.todos}/>
+        </div>
+    )
+  },
+});
+
+const NewTodo = React.createClass({
+  getInitialState: function(){
+    return (
+        { newTodo: { text: "", completed: false }  }
+    )
+  },
+  handleChange: function(evt){
+    this.setState({ newTodo: {text: evt.target.value } });
+  },
+  handleNewTodoSubmit: function(evt){
+    evt.preventDefault();
+    this.props.handleNewTodoSubmit(this.state.newTodo);
+    console.log(evt.target);
+  },
+  render: function(){
+    return (
+      <div className='newTodo'>
+        <form
+          className="ui form"
+          onSubmit={this.handleNewTodoSubmit}
+        >
+          <div className="fields">
+            <div className="twelve wide field">
+              <input
+                type="text"
+                name="new-todo"
+                placeholder="Add todo"
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="one wide field">
+              <button className="ui button" type="submit">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    )
+  },
+});
+
+const TodoList = React.createClass({
+  render: function(){
+    const todos = this.props.todos.map((todo) => {
+      return (
+        <Todo
+          text={todo.text}
+          completed={todo.completed}
+          key={todo.text}
+        />
+      );
+    });
+    return (
+      <div className='todoList'>
+          <div className="ui middle aligned divided list">
+            {todos}
+          </div>
+      </div>
+    )
+  },
+});
+
+const Todo = React.createClass({
+  render: function(){
+    return (
+      <div className="item">
+        <div className="right floated content">
+          <i className="square outline icon large"></i>
+        </div>
+        <div className="content">
+          {this.props.text}
+        </div>
+      </div>
+    )
+  },
+});
+
 ReactDOM.render(
   <Pomodoro />,
   document.getElementById('content')
 );
+
+
+
