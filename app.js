@@ -56,6 +56,7 @@ const Pomodoro = React.createClass({
                 updateStats={this.handleUpdate}
                 currentPomodoro={this.state.completedToday + 1}
                 ringTheBell={this.ringTheBell}
+                appId={this.state.appId}
               />
               <Stats completedToday={this.state.completedToday}/>
             </div>
@@ -75,10 +76,28 @@ const Countdown = React.createClass({
   getInitialState: function() {
     return {
       remaining: DEFAULT_TIME,
+      defaultDuration: DEFAULT_TIME,
       running: false,
+      settingsOn: false,
     };
   },
+  updateFirebase: function(newDuration) {
+    firebase.database().ref('pomodoros/'+this.props.appId+'/defaults').set(newDuration * 60);
+  },
+  fetchOrSetDurationFromFirebase:  function (){
+    let defaultDuration;
+    firebase.database().ref('pomodoros/'+this.props.appId+'/defaults').on('value', snapshot => {
+      if (snapshot.val() != null) {
+        defaultDuration = snapshot.val();
+      } else {
+        defaultDuration = DEFAULT_TIME;
+      };
+      this.setState({defaultDuration: defaultDuration, remaining: defaultDuration});
+      this.updateFirebase();
+    });
+  },
   componentDidMount: function(){
+    this.fetchOrSetDurationFromFirebase();
     if (this.state.running) {
       this.tickInterval = setInterval(this.tick, 1000);
     };
@@ -95,7 +114,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       this.props.ringTheBell();
-      this.setState({ remaining: DEFAULT_TIME, running: false });
+      this.setState({ remaining: this.state.defaultDuration, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
@@ -105,24 +124,92 @@ const Countdown = React.createClass({
   handlePauseClick: function(){
     this.setState({ running: !this.state.running });
   },
+  handleSettingsClick: function() {
+    this.setState({ settingsOn: true });
+  },
+  handleSettingsSave: function(newDuration){
+    this.setState({ settingsOn: false, defaultDuration: newDuration });
+    this.updateFirebase(newDuration);
+  },
   render: function(){
-    const s = this.state.remaining;
-    return (
-      <div className="ui  card">
-        <div className="content">
-          <div className="header">Pomodoro #{this.props.currentPomodoro}</div>
-          <div className="description">
-            <h1>{helpers.secondsToHuman(s)}</h1>
+    if (this.state.settingsOn) {
+      return (
+          <div className="ui  card">
+            <PomodoroSettings
+              handleSettingsSave={this.handleSettingsSave}/>
           </div>
-        </div>
-        <ButtonControls
-          handlePauseClick={this.handlePauseClick}
-          running={this.state.running}
-        />
-      </div>
+      )
+    } else {
+        const sec = this.state.remaining;
+        return (
+          <div className="ui  card">
+            <div className="content">
+              <i
+                className="right floated setting icon"
+                style={{color:'#808080'}}
+                onClick={this.handleSettingsClick}
+              ></i>
+              <div className="header">Pomodoro #{this.props.currentPomodoro}</div>
+            </div>
+            <div className="content">
+              <div className="description">
+                <h1>{helpers.secondsToHuman(sec)}</h1>
+              </div>
+            </div>
+            <ButtonControls
+              handlePauseClick={this.handlePauseClick}
+              running={this.state.running}
+            />
+          </div>
+        )
+    }
+  },
+});
+
+const PomodoroSettings = React.createClass({
+  getInitialState: function(){
+    return ({
+      newDuration: 0
+    });
+  },
+  handleSettingsSave: function(){
+    this.props.handleSettingsSave(this.state.newDuration);
+  },
+  handleSettingInput: function(evt){
+    this.setState({ newDuration: evt.target.value});
+  },
+  render: function(){
+    return (
+          <div className="ui  card">
+            <div className="content">
+              <div className="header">Settings</div>
+              </div>
+            <div className="content">
+              <div className="description">
+                <div className="ui form">
+                  <div className="inline fields">
+                    <div className="sixteen wide field">
+                      <label>Duration:</label>
+                      <input
+                        type="text"
+                        placeholder="in minutes"
+                        onChange={this.handleSettingInput}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className="ui bottom attached button"
+              onClick={this.handleSettingsSave}
+            >Save
+            </div>
+          </div>
     )
   },
 });
+
 
 const ButtonControls = React.createClass({
   render: function(){
