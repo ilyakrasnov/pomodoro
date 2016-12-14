@@ -202,11 +202,65 @@ const Todos = React.createClass({
   handleNewTodoSubmit: function(newTodo){
     this.setState( { todos: [...this.state.todos, newTodo]})
   },
+  handleDeleteItem: function(todoId){
+    let todos = this.state.todos.filter((todo) => {
+      return todo.id !== todoId;
+    })
+
+    this.setState({ todos: todos });
+  },
   render: function(){
     return (
       <div>
         <NewTodo handleNewTodoSubmit={this.handleNewTodoSubmit}/>
-        <TodoList todos={this.state.todos}/>
+        <TodoList
+          todos={this.state.todos}
+          handleDeleteItem={this.handleDeleteItem}
+
+        />
+      </div>
+    )
+  },
+});
+
+const TodoList = React.createClass({
+  render: function(){
+    const todos = this.props.todos.map((todo) => {
+      return (
+        <Todo
+          text={todo.text}
+          completed={todo.completed}
+          key={todo.id}
+          id={todo.id}
+          handleDeleteItem={this.props.handleDeleteItem}
+        />
+      );
+    });
+    return (
+      <div className='todoList'>
+          <div className="ui middle aligned divided list">
+            {todos}
+          </div>
+      </div>
+    )
+  },
+});
+
+const Todo = React.createClass({
+  handleDeleteItem: function(){
+    this.props.handleDeleteItem(this.props.id);
+  },
+  render: function(){
+    return (
+      <div className="item">
+        <div className="right floated content">
+          <i className="remove icon" style={{color:'gray'}}
+            onClick={this.handleDeleteItem}
+          ></i>
+        </div>
+        <div className="content">
+          {this.props.text}
+        </div>
       </div>
     )
   },
@@ -254,42 +308,6 @@ const NewTodo = React.createClass({
             </div>
           </div>
         </form>
-      </div>
-    )
-  },
-});
-
-const TodoList = React.createClass({
-  render: function(){
-    const todos = this.props.todos.map((todo) => {
-      return (
-        <Todo
-          text={todo.text}
-          completed={todo.completed}
-          key={todo.id}
-        />
-      );
-    });
-    return (
-      <div className='todoList'>
-          <div className="ui middle aligned divided list">
-            {todos}
-          </div>
-      </div>
-    )
-  },
-});
-
-const Todo = React.createClass({
-  render: function(){
-    return (
-      <div className="item">
-        <div className="right floated content">
-          <i className="square outline icon large"></i>
-        </div>
-        <div className="content">
-          {this.props.text}
-        </div>
       </div>
     )
   },
