@@ -7,6 +7,8 @@ const config = {
     };
 firebase.initializeApp(config);
 
+const DEFAULT_TIME = 25 * 60;
+
 const Pomodoro = React.createClass({
   getInitialState: function(){
     return (
@@ -72,7 +74,7 @@ const Pomodoro = React.createClass({
 const Countdown = React.createClass({
   getInitialState: function() {
     return {
-      remaining: 2,
+      remaining: DEFAULT_TIME,
       running: false,
     };
   },
@@ -93,7 +95,7 @@ const Countdown = React.createClass({
   tick: function(){
     if (this.state.remaining === 0) {
       this.props.ringTheBell();
-      this.setState({ remaining: 2, running: false });
+      this.setState({ remaining: DEFAULT_TIME, running: false });
       this.props.updateStats();
     } else {
         this.setState({ remaining: this.state.remaining -1 });
