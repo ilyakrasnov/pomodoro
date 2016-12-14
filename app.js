@@ -223,7 +223,7 @@ const NewTodo = React.createClass({
   handleNewTodoSubmit: function(evt){
     evt.preventDefault();
     this.props.handleNewTodoSubmit(this.state.newTodo);
-    console.log(evt.target);
+    this.refs.newTodo.value = '';
   },
   render: function(){
     return (
@@ -236,7 +236,7 @@ const NewTodo = React.createClass({
             <div className="twelve wide field">
               <input
                 type="text"
-                name="new-todo"
+                ref="newTodo"
                 placeholder="Add todo"
                 onChange={this.handleChange}
               />
