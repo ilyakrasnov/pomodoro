@@ -60,7 +60,7 @@ const Pomodoro = React.createClass({
 
           </div>
           <div className="ten wide column">
-            <Todos />
+            <Todos appId={this.state.appId}/>
           </div>
         </div>
       </div>
@@ -171,35 +171,32 @@ const Stats = React.createClass({
 });
 
 const Todos = React.createClass({
+  fetchOrSetFirebase: function(){
+    let todos;
+    firebase.database().ref('pomodoros/'+this.props.appId+'/todos').on('value', snapshot => {
+      if (snapshot.val() != null) {
+        todos = snapshot.val();
+      } else {
+        todos = [];
+      };
+      this.setState({todos: todos});
+    });
+  },
   getInitialState: function (){
     return (
         {
-      todos: [
-        {
-          text: "Learn React",
-          completed: false
-        },
-        {
-          text: "Learn Angular",
-          completed: false
-        },
-        {
-          text: "Work on OAMP",
-          completed: false
-        },
-        {
-          text: "Email Yaakov",
-          completed: false
-        },
-        {
-          text: "Listen to Kafka",
-          completed: false
-        },
-      ]
+      todos: [ ]
     })
+  },
+  componentDidMount: function() {
+    this.fetchOrSetFirebase();
+  },
+  updateFirebase: function() {
+    firebase.database().ref('pomodoros/'+this.props.appId+'/todos').set(this.state.todos)
   },
   handleNewTodoSubmit: function(newTodo){
     this.setState( { todos: [...this.state.todos, newTodo]})
+    this.updateFirebase();
   },
   render: function(){
     return (
@@ -218,7 +215,7 @@ const NewTodo = React.createClass({
     )
   },
   handleChange: function(evt){
-    this.setState({ newTodo: {text: evt.target.value } });
+    this.setState({ newTodo: {text: evt.target.value, completed: false } });
   },
   handleNewTodoSubmit: function(evt){
     evt.preventDefault();
