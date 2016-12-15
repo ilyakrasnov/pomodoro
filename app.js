@@ -298,6 +298,13 @@ const Todos = React.createClass({
 
     this.setState({ todos: todos });
   },
+  deleteCompleted: function(){
+    let todos = this.state.todos.filter((todo) => {
+      return todo.completed === false;
+    })
+
+    this.setState({ todos: todos });
+  },
   toggleCompleteItem: function(todoId){
     let todos = this.state.todos.map((todo) => {
       if (todo.id === todoId) {
@@ -319,8 +326,26 @@ const Todos = React.createClass({
           toggleCompleteItem={this.toggleCompleteItem}
 
         />
+        <DeleteCompleted
+          nrOfTodos={this.state.todos.length}
+          deleteCompleted={this.deleteCompleted}
+        />
       </div>
     )
+  },
+});
+
+const DeleteCompleted = React.createClass({
+  render: function(){
+    if (this.props.nrOfTodos > 0) {
+      return (
+        <a onClick={this.props.deleteCompleted}>Delete completed</a>
+      )
+    } else {
+      return (
+        <div></div>
+      )
+    };
   },
 });
 
@@ -340,7 +365,7 @@ const TodoList = React.createClass({
     });
     return (
       <div className='todoList'>
-          <div className="ui middle aligned divided list">
+          <div className="ui middle aligned divided list" style={{marginBottom:'15px'}}>
             {todos}
           </div>
       </div>
