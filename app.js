@@ -390,11 +390,12 @@ const Todo = React.createClass({
             ></i>
           </div>
           <div className="left floated content">
-            <i className="square outline icon" style={{color:'gray'}}
-              onClick={this.toggleCompleteItem}
-            ></i>
+            <i className="square outline icon" style={{color:'gray'}}></i>
           </div>
-          <div className="content">
+          <div
+            className="content"
+            onClick={this.toggleCompleteItem}
+          >
             {this.props.text}
           </div>
         </div>
@@ -412,7 +413,9 @@ const Todo = React.createClass({
               onClick={this.toggleCompleteItem}
             ></i>
           </div>
-          <div className="content" style={{ color: 'gray', textDecoration: 'line-through'}}>
+          <div className="content" style={{ color: 'gray', textDecoration: 'line-through'}}
+            onClick={this.toggleCompleteItem}
+          >
             {this.props.text}
           </div>
         </div>
