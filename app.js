@@ -298,6 +298,17 @@ const Todos = React.createClass({
 
     this.setState({ todos: todos });
   },
+  toggleCompleteItem: function(todoId){
+    let todos = this.state.todos.map((todo) => {
+      if (todo.id === todoId) {
+        Object.assign(todo, { completed: !todo.completed });
+        return todo;
+      } else {
+        return todo;
+      };
+    })
+    this.setState({ todos: todos });
+  },
   render: function(){
     return (
       <div>
@@ -305,6 +316,7 @@ const Todos = React.createClass({
         <TodoList
           todos={this.state.todos}
           handleDeleteItem={this.handleDeleteItem}
+          toggleCompleteItem={this.toggleCompleteItem}
 
         />
       </div>
@@ -322,6 +334,7 @@ const TodoList = React.createClass({
           key={todo.id}
           id={todo.id}
           handleDeleteItem={this.props.handleDeleteItem}
+          toggleCompleteItem={this.props.toggleCompleteItem}
         />
       );
     });
@@ -339,19 +352,47 @@ const Todo = React.createClass({
   handleDeleteItem: function(){
     this.props.handleDeleteItem(this.props.id);
   },
+  toggleCompleteItem: function(){
+    this.props.toggleCompleteItem(this.props.id);
+  },
   render: function(){
-    return (
-      <div className="item">
-        <div className="right floated content">
-          <i className="remove icon" style={{color:'gray'}}
-            onClick={this.handleDeleteItem}
-          ></i>
+    if (!this.props.completed) {
+      return (
+        <div className="item">
+          <div className="right floated content">
+            <i className="remove icon" style={{color:'gray'}}
+              onClick={this.handleDeleteItem}
+            ></i>
+          </div>
+          <div className="left floated content">
+            <i className="square outline icon" style={{color:'gray'}}
+              onClick={this.toggleCompleteItem}
+            ></i>
+          </div>
+          <div className="content">
+            {this.props.text}
+          </div>
         </div>
-        <div className="content">
-          {this.props.text}
+      )
+    } else {
+      return (
+        <div className="item">
+          <div className="right floated content">
+            <i className="remove icon" style={{color:'gray'}}
+              onClick={this.handleDeleteItem}
+            ></i>
+          </div>
+          <div className="left floated content">
+            <i className="checkmark box icon" style={{color:'gray'}}
+              onClick={this.toggleCompleteItem}
+            ></i>
+          </div>
+          <div className="content" style={{ color: 'gray', textDecoration: 'line-through'}}>
+            {this.props.text}
+          </div>
         </div>
-      </div>
-    )
+        )
+    };
   },
 });
 
