@@ -389,7 +389,10 @@ const Todo = React.createClass({
               onClick={this.handleDeleteItem}
             ></i>
           </div>
-          <div className="left floated content">
+          <div
+            className="left floated content"
+            onClick={this.toggleCompleteItem}
+          >
             <i className="square outline icon" style={{color:'gray'}}></i>
           </div>
           <div
