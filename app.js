@@ -170,14 +170,24 @@ const Countdown = React.createClass({
 const PomodoroSettings = React.createClass({
   getInitialState: function(){
     return ({
-      newDuration: 0
+      newDuration: null,
+      defaultDuration: this.props.defaultDuration,
     });
   },
+  componentDidUpdate: function(){
+    this.refs.defaultDuration.focus();
+  },
   handleSettingsSave: function(){
-    this.props.handleSettingsSave(this.state.newDuration);
+    let duration = this.state.newDuration || this.state.defaultDuration;
+    this.props.handleSettingsSave(duration);
   },
   handleSettingInput: function(evt){
     this.setState({ newDuration: evt.target.value});
+  },
+  handleKeyPress: function(evt){
+    if (evt.charCode === 13) {
+      this.handleSettingsSave();
+    }
   },
   render: function(){
     return (
@@ -194,8 +204,10 @@ const PomodoroSettings = React.createClass({
                       <input
                         type="text"
                         placeholder="in minutes"
-                        defaultValue={this.props.defaultDuration}
+                        defaultValue={this.state.defaultDuration}
                         onChange={this.handleSettingInput}
+                        onKeyPress={this.handleKeyPress}
+                        ref="defaultDuration"
                       />
                     </div>
                   </div>
