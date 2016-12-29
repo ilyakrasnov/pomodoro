@@ -136,7 +136,8 @@ const Countdown = React.createClass({
       return (
           <div className="ui  card">
             <PomodoroSettings
-              handleSettingsSave={this.handleSettingsSave}/>
+              handleSettingsSave={this.handleSettingsSave}
+              defaultDuration={this.state.defaultDuration / 60}/>
           </div>
       )
     } else {
@@ -193,6 +194,7 @@ const PomodoroSettings = React.createClass({
                       <input
                         type="text"
                         placeholder="in minutes"
+                        defaultValue={this.props.defaultDuration}
                         onChange={this.handleSettingInput}
                       />
                     </div>
