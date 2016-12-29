@@ -174,6 +174,9 @@ const PomodoroSettings = React.createClass({
       defaultDuration: this.props.defaultDuration,
     });
   },
+  componentDidMount: function(){
+    this.refs.defaultDuration.focus();
+  },
   componentDidUpdate: function(){
     this.refs.defaultDuration.focus();
   },
